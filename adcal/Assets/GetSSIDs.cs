@@ -5,10 +5,13 @@ using UnityEngine;
 using ManagedNativeWifi.Simple;
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 public class GetSSIDs : MonoBehaviour {
     [SerializeField] string[] ssids;
     [SerializeField] string[] ssidshash;
+
+    [SerializeField] string[] strings;
     // Use this for initialization
     void Start()
     {
@@ -19,10 +22,10 @@ public class GetSSIDs : MonoBehaviour {
         ssids = ssids.Distinct().ToArray();
         // 環境により重複するので重複排除
 
-        var sha = System.Security.Cryptography.SHA1.Create();
+        var sha = System.Security.Cryptography.SHA256.Create();
         // hash用オブジェクトを作成
-        // 別に強度はいらないのでsha1でいいかなと
-        // パスワードとかはSHA256とかもっとbitが大きいのを
+
+
 
         ssidshash = new string[ssids.Length];
         // hashの文字列（16進数）を格納するstring[]を初期化
@@ -37,12 +40,13 @@ public class GetSSIDs : MonoBehaviour {
 
             ssidshash[i] =  BitConverter.ToString(sha.Hash).ToLower().Replace("-", "");
             //16進数に変換
+
         }
         sha.Clear();
         // hashのオブジェクトを開放
 
-
-
+        strings = Regex.Split(ssidshash[0], @"(?<=\G.{4})(?!$)");
+        // 例えばこんな感じに4桁ずつ区切ったりして使うといいかも
     }
 	
 	// Update is called once per frame
